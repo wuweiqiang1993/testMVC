@@ -6,7 +6,7 @@
     $config['db']['dbname'] = 'test';
 
     // 默认控制器和操作名
-    $config['defaultController'] = 'Item';
+    $config['defaultController'] = 'Index';
     $config['defaultAction'] = 'index';
 
     return $config;
