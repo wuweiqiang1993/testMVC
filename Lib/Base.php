@@ -95,17 +95,17 @@
         // 删除敏感字符
         public function stripSlashesDeep(array $value):array
         {
-            $value = is_array($value) ? array_map(array($this, 'stripSlashesDeep'), $value) : stripslashes($value);
+            $value = is_array($value) ? array_map(array('Base', 'stripSlashesDeep'), $value) : stripslashes($value);
             return $value;
         }
         // 检测敏感字符并删除
         static function removeMagicQuotes():void
         {
             if (get_magic_quotes_gpc()) {
-                $_GET = isset($_GET) ? $this->stripSlashesDeep($_GET ) : '';
-                $_POST = isset($_POST) ? $this->stripSlashesDeep($_POST ) : '';
-                $_COOKIE = isset($_COOKIE) ? $this->stripSlashesDeep($_COOKIE) : '';
-                $_SESSION = isset($_SESSION) ? $this->stripSlashesDeep($_SESSION) : '';
+                $_GET = isset($_GET) ? self::stripSlashesDeep($_GET ) : '';
+                $_POST = isset($_POST) ? self::stripSlashesDeep($_POST ) : '';
+                $_COOKIE = isset($_COOKIE) ? self::stripSlashesDeep($_COOKIE) : '';
+                $_SESSION = isset($_SESSION) ? self::stripSlashesDeep($_SESSION) : '';
             }
         }
 
