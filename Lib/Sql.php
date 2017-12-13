@@ -19,7 +19,7 @@ class Sql
     }
 
     // 查询条件
-    public function where($where = array())
+    public function where(array $where = array()):object
     {
         if (isset($where)) {
             $this->filter .= ' WHERE ';
@@ -30,7 +30,7 @@ class Sql
     }
 
     // 排序条件
-    public function order($order = array())
+    public function order($order = array()):object
     {
         if(isset($order)) {
             $this->filter .= ' ORDER BY ';
@@ -41,7 +41,7 @@ class Sql
     }
 
     // 查询所有
-    public function selectAll()
+    public function selectAll():array
     {
         $sql = sprintf("select * from `%s` %s", $this->_table, $this->filter);
         $sth = $this->_dbHandle->prepare($sql);
@@ -51,7 +51,7 @@ class Sql
     }
 
     // 根据条件 (id) 查询
-    public function select($id)
+    public function select($id):array
     {
         $sql = sprintf("select * from `%s` where `id` = '%s'", $this->_table, $id);
         $sth = $this->_dbHandle->prepare($sql);
@@ -61,7 +61,7 @@ class Sql
     }
 
     // 根据条件 (id) 删除
-    public function delete($id)
+    public function delete($id):int
     {
         $sql = sprintf("delete from `%s` where `id` = '%s'", $this->_table, $id);
         $sth = $this->_dbHandle->prepare($sql);
@@ -71,7 +71,7 @@ class Sql
     }
 
     // 自定义SQL查询，返回影响的行数
-    public function query($sql)
+    public function query($sql):int
     {
         $sth = $this->_dbHandle->prepare($sql);
         $sth->execute();

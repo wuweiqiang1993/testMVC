@@ -1,36 +1,39 @@
 <?php
 /**
- * fastphp框架核心
+ * Base框架核心
  */
-    class Fastphp
+    class Base
     {
-        protected $config = [];
+        static $_config = [];
         /**
          * 初始化配置
          */
-        public function __construct($config)
+        static function _init()
         {
-            $this->_config = $config;
+            // 加载配置文件
+            $config = require(APP_PATH . 'config/config.php');
+            self::$_config = $config;
         }
 
         /**
          * 运行程序
          */
-        public function run()
+        static function run():void
         {
-            spl_autoload_register(array($this, 'loadClass'));
-            $this->setReporting();
-            $this->removeMagicQuotes();
-            $this->unregisterGlobals();
-            $this->setDbConfig();
-            $this->route();
+            self::_init();
+            spl_autoload_register(array('Base','loadClass'));
+            self::setReporting();
+            self::removeMagicQuotes();
+            self::unregisterGlobals();
+            self::setDbConfig();
+            self::route();
         }
 
         // 路由处理
-        public function route()
+        static function route():void
         {
-            $controllerName = $this->_config['defaultController'];
-            $actionName = $this->_config['defaultAction'];
+            $controllerName = self::$_config['defaultController'];
+            $actionName = self::$_config['defaultAction'];
             $param = array();
 
             $url = $_SERVER['REQUEST_URI'];
@@ -77,26 +80,26 @@
             call_user_func_array(array($dispatch, $actionName), $param);
         }
         // 检测开发环境
-        public function setReporting()
+        static function setReporting():void
         {
             if (APP_DEBUG === true) {
                 error_reporting(E_ALL);
                 ini_set('display_errors','On');
             } else {
-                error_reporting(E_ALL);
+                error_reporting(E_ALL & ~E_NOTICE);
                 ini_set('display_errors','Off');
                 ini_set('log_errors', 'On');
             }
         }
 
         // 删除敏感字符
-        public function stripSlashesDeep($value)
+        public function stripSlashesDeep(array $value):array
         {
             $value = is_array($value) ? array_map(array($this, 'stripSlashesDeep'), $value) : stripslashes($value);
             return $value;
         }
         // 检测敏感字符并删除
-        public function removeMagicQuotes()
+        static function removeMagicQuotes():void
         {
             if (get_magic_quotes_gpc()) {
                 $_GET = isset($_GET) ? $this->stripSlashesDeep($_GET ) : '';
@@ -111,7 +114,7 @@
         // 在脚本的全局作用域中可用。 例如， $_POST['foo'] 也将以 $foo 的
         // 形式存在，这样写是不好的实现，会影响代码中的其他变量。 相关信息，
         // 参考: http://php.net/manual/zh/faq.using.php#faq.register-globals
-        public function unregisterGlobals()
+        static function unregisterGlobals():void
         {
             if (ini_get('register_globals')) {
                 $array = array('_SESSION', '_POST', '_GET', '_COOKIE', '_REQUEST', '_SERVER', '_ENV', '_FILES');
@@ -126,15 +129,15 @@
         }
 
         // 配置数据库信息
-        public function setDbConfig()
+        static function setDbConfig():void
         {
-            if ($this->_config['db']) {
-                Model::$dbConfig = $this->_config['db'];
+            if (self::$_config['db']) {
+                Model::$dbConfig = self::$_config['db'];
             }
         }
 
         // 自动加载控制器和模型类 
-        public static function loadClass($class)
+        public static function loadClass($class):void
         {
             $frameworks = __DIR__ . '/' . $class . '.php';
             $controllers = APP_PATH . 'app/controller/' . $class . '.php';
