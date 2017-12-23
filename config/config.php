@@ -1,12 +1,13 @@
 <?php
-    // 数据库配置
-    $config['db']['host'] = 'localhost';
-    $config['db']['username'] = 'root';
-    $config['db']['password'] = 'root';
-    $config['db']['dbname'] = 'test';
-
-    // 默认控制器和操作名
-    $config['defaultController'] = 'Index';
-    $config['defaultAction'] = 'index';
-
-    return $config;
+    return [
+        // 数据库配置
+        'db'=>[
+            'host'=>'localhost',
+            'username'=>'root',
+            'password'=>'root',
+            'dbname'=>'test'
+        ],
+        // 默认控制器和操作名
+        'defaultController'=>'Index',
+        'defaultAction'=>'index'
+    ];

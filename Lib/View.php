@@ -34,7 +34,7 @@ class View
         // 页头文件
         if (file_exists($controllerHeader)) {
             include ($controllerHeader);
-        } else {
+        } else if (file_exists($defaultHeader)){
             include ($defaultHeader);
         }
 
@@ -43,7 +43,7 @@ class View
         // 页脚文件
         if (file_exists($controllerFooter)) {
             include ($controllerFooter);
-        } else {
+        } else if (file_exists($defaultFooter)) {
             include ($defaultFooter);
         }
     }
