@@ -14,7 +14,7 @@ class Controller
     {
         $this->_controller = $controller;
         $this->_action = $action;
-        $this->_view = new Templates();
+        $this->_view = new View($controller, $action);
     }
 
     // 分配变量
@@ -24,7 +24,7 @@ class Controller
     }
 
     // 渲染视图
-    public function display($tpl_file)
+    public function display($tpl_file='')
     {
         $this->_view->display($tpl_file);
     }

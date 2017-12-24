@@ -1,25 +1,49 @@
 <?php
     class Parser {
         //获取模板内容
-        private $_tpl;
+        private $_tpl = '';
         //构造方法，初始化模板
-        public function __construct($_tplFile){
-            //判断文件是否存在
-            if(!$this->_tpl = file_get_contents($_tplFile)){
-                exit('ERROR：读取模板出错！');
+        public function __construct($controller, $action,$_tplFile)
+        {
+            $defaultHeader = TPL_DIR . 'header.html';
+            $defaultFooter = TPL_DIR . 'footer.html';
+            $controller = ucfirst($controller);
+            $controllerHeader = TPL_DIR . $controller . '/header.html';
+            $controllerFooter = TPL_DIR . $controller . '/footer.html';
+            $controllerLayout = TPL_DIR . $controller . '/' . $action . '.html';
+            // 页头文件
+            if (file_exists($controllerHeader)) {
+                $this->_tpl .= file_get_contents($controllerHeader);
+            } else if (file_exists($defaultHeader)){
+                $this->_tpl .= file_get_contents($defaultHeader);
             }
-             
+            //判断文件是否存在
+            if(file_exists($_tplFile) && is_file($_tplFile)){
+                $this->_tpl .= file_get_contents($_tplFile);
+            }else if(file_exists($controllerLayout)){
+                $this->_tpl .= file_get_contents($controllerLayout);
+            }else{
+                exit('ERROR:TEMPLATE_FILE_NOT_EXISTS');
+            }
+            // 页脚文件
+            if (file_exists($controllerFooter)) {
+                $this->_tpl .= file_get_contents($controllerFooter);
+            } else if (file_exists($defaultFooter)) {
+                $this->_tpl .= file_get_contents($defaultFooter);
+            }
         }
          
-        //解析普通变量
-        private function parVar(){
+        //解析普通变量{$a}
+        private function parVar()
+        {
             $_pattern = '/\{\$([\w]+)\}/';
             if (preg_match($_pattern,$this->_tpl)) {
                 $this->_tpl = preg_replace($_pattern,"<?php echo \$$1 ?>",$this->_tpl);
             }
         }
-        //解析IF条件语句
-        private function parIf(){
+        //解析IF条件语句{if $a >1 }...{else if $a > 5}...{else}...{/if}
+        private function parIf()
+        {
             //开头if模式
             $_patternIf = '/\{if\s+\$([\w]+)\}/';
             //结尾if模式
@@ -50,8 +74,9 @@
                 }
             }
         }
-        //解析foreach
-        private function parForeach(){
+        //解析foreach {foreach $a($k,$v)}...{/foreach}
+        private function parForeach()
+        {
             $_patternForeach = '/\{foreach\s+\$(\w+)\((\w+),(\w+)\)\}/';
             $_patternEndForeach = '/\{\/foreach\}/';
             //foreach里的值
@@ -75,7 +100,8 @@
             }
         }
         //解析include
-        private function parInclude(){
+        private function parInclude()
+        {
             $_pattern = '/\{include\s+\"(.*)\"\}/';
             if(preg_match($_pattern, $this->_tpl,$_file)){
                 //判断头文件是否存在
@@ -87,7 +113,8 @@
             }
         }
         //解析系统变量
-        private function configVar(){
+        private function configVar()
+        {
             $_pattern = '/<!--\{(\w+)\}-->/';
             if(preg_match($_pattern, $this->_tpl,$_file)){
                 $this->_tpl = preg_replace($_pattern,"<?php echo \$this->_config['$1'] ?>", $this->_tpl);
@@ -96,16 +123,17 @@
         }
          
         //解析单行PHP注释
-        private function parCommon(){
+        private function parCommon()
+        {
             $_pattern = '/\{#\}(.*)\{#\}/';
             if(preg_match($_pattern, $this->_tpl)){
                 $this->_tpl = preg_replace($_pattern, "<?php /*($1) */?>", $this->_tpl);
             }
         }
          
-         
         //生成编译文件
-        public function compile($_parFile){
+        public function compile($_parFile)
+        {
             //解析模板变量
             $this->parVar();
             //解析IF
@@ -119,7 +147,10 @@
             //解析系统变量
             $this->configVar();
             //生成编译文件
-            if(!file_put_contents($_parFile, $this->_tpl)){
+            //已存在且现有内容与解析内容不符
+            if(file_exists($_parFile) && $this->_tpl!=file_get_contents($_parFile)){
+                file_put_contents($_parFile, $this->_tpl);
+            }else if(!file_put_contents($_parFile, $this->_tpl)){
                 exit('ERROR：编译文件生成失败！');
             }
         }

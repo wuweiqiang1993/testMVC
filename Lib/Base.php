@@ -11,14 +11,14 @@
         static function _init()
         {
             // 加载配置文件
-            $config = require(APP_PATH . 'config/config.php');
+            $config = require(ROOT_PATH . 'config/config.php');
             self::$_config = $config;
         }
 
         /**
          * 运行程序
          */
-        static function run():void
+        static function run()
         {
             self::_init();
             spl_autoload_register(array('Base','loadClass'));
@@ -30,7 +30,7 @@
         }
 
         // 路由处理
-        static function route():void
+        static function route()
         {
             $controllerName = self::$_config['defaultController'];
             $actionName = self::$_config['defaultAction'];
@@ -80,7 +80,7 @@
             call_user_func_array(array($dispatch, $actionName), $param);
         }
         // 检测开发环境
-        static function setReporting():void
+        static function setReporting()
         {
             if (APP_DEBUG === true) {
                 error_reporting(E_ALL);
@@ -93,13 +93,13 @@
         }
 
         // 删除敏感字符
-        public function stripSlashesDeep(array $value):array
+        public function stripSlashesDeep(array $value)
         {
             $value = is_array($value) ? array_map(array('Base', 'stripSlashesDeep'), $value) : stripslashes($value);
             return $value;
         }
         // 检测敏感字符并删除
-        static function removeMagicQuotes():void
+        static function removeMagicQuotes()
         {
             if (get_magic_quotes_gpc()) {
                 $_GET = isset($_GET) ? self::stripSlashesDeep($_GET ) : '';
@@ -114,7 +114,7 @@
         // 在脚本的全局作用域中可用。 例如， $_POST['foo'] 也将以 $foo 的
         // 形式存在，这样写是不好的实现，会影响代码中的其他变量。 相关信息，
         // 参考: http://php.net/manual/zh/faq.using.php#faq.register-globals
-        static function unregisterGlobals():void
+        static function unregisterGlobals()
         {
             if (ini_get('register_globals')) {
                 $array = array('_SESSION', '_POST', '_GET', '_COOKIE', '_REQUEST', '_SERVER', '_ENV', '_FILES');
@@ -129,7 +129,7 @@
         }
 
         // 配置数据库信息
-        static function setDbConfig():void
+        static function setDbConfig()
         {
             if (self::$_config['db']) {
                 Model::$dbConfig = self::$_config['db'];
@@ -137,21 +137,21 @@
         }
 
         // 自动加载控制器和模型类 
-        public static function loadClass($class):void
+        public static function loadClass($class)
         {
             $frameworks = __DIR__ . '/' . $class . '.php';
-            $controllers = APP_PATH . 'app/controller/' . $class . '.php';
-            $models = APP_PATH . 'app/model/' . $class . '.php';
+            $controllers = APP_PATH . '/controller/' . $class . '.php';
+            $models = APP_PATH . '/model/' . $class . '.php';
 
-            if (file_exists($frameworks)) {
-                // 加载框架核心类
-                include $frameworks;
-            } elseif (file_exists($controllers)) {
+            if (file_exists($controllers)) {
                 // 加载应用控制器类
                 include $controllers;
-            } elseif (file_exists($models)) {
+            } else if (file_exists($models)) {
                 //加载应用模型类
                 include $models;
+            } else if (file_exists($frameworks)){
+                // 加载框架核心类
+                include $frameworks;
             } else {
             }
         }
