@@ -150,8 +150,10 @@
             //已存在且现有内容与解析内容不符
             if(file_exists($_parFile) && $this->_tpl!=file_get_contents($_parFile)){
                 file_put_contents($_parFile, $this->_tpl);
-            }else if(!file_put_contents($_parFile, $this->_tpl)){
-                exit('ERROR：编译文件生成失败！');
+            }else if(!file_exists($_parFile)){
+                if(!file_put_contents($_parFile, $this->_tpl)){
+                    exit('ERROR：编译文件生成失败！');
+                }
             }
         }
     }

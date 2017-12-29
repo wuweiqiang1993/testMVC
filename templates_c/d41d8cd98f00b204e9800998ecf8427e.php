@@ -8,6 +8,7 @@
 </head>
 <body>
     <?php foreach($name as $key=>$value){?>
+    
     <?php foreach($value as $key1=>$value1){?>
         <?php echo $key1?> -- <?php echo $value1?><br>
     <?php } ?>
