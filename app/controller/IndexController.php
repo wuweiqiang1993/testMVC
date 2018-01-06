@@ -17,5 +17,9 @@
             $this->assign('name',$a->search());
             $this->display();
         }
+
+        public function _empty(){
+            echo '404，方法不存在';
+        }
     }
     
