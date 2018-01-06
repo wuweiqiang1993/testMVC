@@ -75,9 +75,21 @@
             // 传进去。结合Controller基类一起看
             $dispatch = new $controller($controllerName, $actionName);
 
+            //前置操作
+            $before_action = '_before_'.$actionName;
+            if (method_exists($controller, $before_action)) {
+                $before_dispatch = new $controller($controllerName, $before_action);
+                call_user_func_array(array($before_dispatch, $before_action), $param);
+            }
             // $dispatch保存控制器实例化后的对象，我们就可以调用它的方法，
             // 也可以像方法中传入参数，以下等同于：$dispatch->$actionName($param)
             call_user_func_array(array($dispatch, $actionName), $param);
+            //后置操作
+            $after_action = '_after_'.$actionName;
+            if (method_exists($controller, $after_action)) {
+                $after_dispatch = new $controller($controllerName, $after_action);
+                call_user_func_array(array($after_dispatch, $after_action), $param);
+            }
         }
         // 检测开发环境
         static function setReporting()
