@@ -69,35 +69,35 @@ class Base
             }
             $empty_dispatch = new EmptyController('EmptyController', '_empty');
             call_user_func_array(array($empty_dispatch, '_empty'), $param);
-        }else if (!method_exists($controller, $actionName)) {
+            exit;
+        }
+        if (!method_exists($controller, $actionName)) {
             if (!method_exists($controller, '_empty')) {
                 exit($actionName . '方法不存在');
             }
             $empty_dispatch = new $controller($controllerName, '_empty');
             call_user_func_array(array($empty_dispatch, '_empty'), $param);
-        } else {
-            // 如果控制器和操作名存在，则实例化控制器，因为控制器对象里面
-            // 还会用到控制器名和操作名，所以实例化的时候把他们俩的名称也
-            // 传进去。结合Controller基类一起看
-            $dispatch = new $controller($controllerName, $actionName);
-
-            //前置操作
-            $before_action = '_before_' . $actionName;
-            if (method_exists($controller, $before_action)) {
-                $before_dispatch = new $controller($controllerName, $before_action);
-                call_user_func_array(array($before_dispatch, $before_action), $param);
-            }
-            // $dispatch保存控制器实例化后的对象，我们就可以调用它的方法，
-            // 也可以像方法中传入参数，以下等同于：$dispatch->$actionName($param)
-            call_user_func_array(array($dispatch, $actionName), $param);
-            //后置操作
-            $after_action = '_after_' . $actionName;
-            if (method_exists($controller, $after_action)) {
-                $after_dispatch = new $controller($controllerName, $after_action);
-                call_user_func_array(array($after_dispatch, $after_action), $param);
-            }
+            exit;
         }
-
+        // 如果控制器和操作名存在，则实例化控制器，因为控制器对象里面
+        // 还会用到控制器名和操作名，所以实例化的时候把他们俩的名称也
+        // 传进去。结合Controller基类一起看
+        $dispatch = new $controller($controllerName, $actionName);
+        //前置操作
+        $before_action = '_before_' . $actionName;
+        if (method_exists($controller, $before_action)) {
+            $before_dispatch = new $controller($controllerName, $before_action);
+            call_user_func_array(array($before_dispatch, $before_action), $param);
+        }
+        // $dispatch保存控制器实例化后的对象，我们就可以调用它的方法，
+        // 也可以像方法中传入参数，以下等同于：$dispatch->$actionName($param)
+        call_user_func_array(array($dispatch, $actionName), $param);
+        //后置操作
+        $after_action = '_after_' . $actionName;
+        if (method_exists($controller, $after_action)) {
+            $after_dispatch = new $controller($controllerName, $after_action);
+            call_user_func_array(array($after_dispatch, $after_action), $param);
+        }
     }
     // 检测开发环境
     public static function setReporting()

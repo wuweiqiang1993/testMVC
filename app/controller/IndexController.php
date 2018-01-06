@@ -17,7 +17,12 @@
             $this->assign('name',$a->search());
             $this->display();
         }
-
+        public function _before_index(){
+            echo 'bofore action';
+        }
+        public function _after_index(){
+            echo 'after action';
+        }
         public function _empty(){
             echo '404，方法不存在';
         }
