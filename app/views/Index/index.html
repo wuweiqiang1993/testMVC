@@ -1,10 +1,11 @@
 
 <body>
+    红包分配（总共￥{$total}）<br>
     {foreach $name(key,value)}
-    
-    {foreach $value(key1,value1)}
-        {@key1} -- {@value1}<br>
-    {/foreach}
+        {@key}
+        {foreach $value(k,v)}
+            第{@k+1}个红包金额：￥{@value[k]}<br>
+        {/foreach}
     {/foreach}
 </body>
 </html>

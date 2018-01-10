@@ -28,4 +28,51 @@ class ItemModel extends Model
 
         return $sth->fetchAll();
     }
+
+    public function hongbao($total_money,$people_num,$min,$max)
+    {
+        $result = [];
+        $left_money = $total_money-$people_num*$min;
+        $min==0&&$min=0.1;
+        if($left_money<0){
+            exit('总数不足以分配最低额度');
+        }
+        if($total_money>$people_num*$max){
+            exit('总数太高无法满足分配区间需求');
+        }
+        //满足区间的最高额度
+        if($total_money==$people_num*$max){
+            for ($i=0; $i < $people_num; $i++) { 
+                $result[$i]=$max;
+            }
+            return $result;
+        }
+        //满足区间的最低额度
+        if($total_money==$people_num*$min){
+            for ($i=0; $i < $people_num; $i++) { 
+                $result[$i]=$min;
+            }
+            return $result;
+        }
+        //正常情况
+        $field = $max-$min;
+        $i=0;
+        while($i < $people_num) { 
+            $result[$i] = $min+round(mt_rand(0, $field*100)/100,2);
+            $res_sum = array_sum($result);//已分配总数
+            $left_num = $people_num-$i-1;//未分配人数
+            $left = ($total_money*100-$res_sum*100)/100;//剩余钱数
+            //echo ($i+1).' 结果：'.$result[$i].' 剩余：'.$left.'<br>';
+            if($left_num==0){
+                unset($result[$i]);
+                $result[$i] = $total_money-array_sum($result);
+                break;
+            }
+            $left_per = $left/$left_num;
+            if($left_per>=$min&&$left_per<=$max){
+                $i++;
+            }
+        }
+        return $result;
+    }
 }

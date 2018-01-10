@@ -80,9 +80,13 @@
             $_patternForeach = '/\{foreach\s+\$(\w+)\((\w+),(\w+)\)\}/';
             $_patternEndForeach = '/\{\/foreach\}/';
             //foreach里的值
-            $_patternVal = '/\{@(\w+)\}/';
+            //{@key}
+            $_patternValAction = '/\{@(\w+)\s?([\+\-\*\/]?)\s?(\w?)\}/';
             //foreach里的变量
-            $_patternVar = '/\{\$(\w+)\[\'(\w+)\'\]\}/';
+            //{@value['a'] [+1] }
+            $_patternVarAction = '/\{@(\w+)\[\'(\w+)\'\]\s?([\+\-\*\/]?)\s?(\w?)\}/';
+            //{@value[k] [+1] }
+            $_patternVarsAction = '/\{@(\w+)\[(\w+)\]\s?([\+\-\*\/]?)\s?(\w?)\}/';
             //判断是否存在
             if(preg_match($_patternForeach, $this->_tpl)){
                 //判断结束标志
@@ -92,8 +96,9 @@
                     //替换结束
                     $this->_tpl = preg_replace($_patternEndForeach, "<?php } ?>", $this->_tpl);
                     //替换值
-                    $this->_tpl = preg_replace($_patternVal, "<?php echo \$$1?>", $this->_tpl);
-                    $this->_tpl = preg_replace($_patternVar, "<?php echo \$$1['$2']?>", $this->_tpl);
+                    $this->_tpl = preg_replace($_patternValAction, "<?php echo \$$1 $2 $3?>", $this->_tpl);
+                    $this->_tpl = preg_replace($_patternVarAction, "<?php echo \$$1['$2'] $3 $4?>", $this->_tpl);
+                    $this->_tpl = preg_replace($_patternVarsAction, "<?php echo \$$1[\$$2] $3 $4?>", $this->_tpl);
                 }else{
                     exit('ERROR：Foreach语句没有关闭');
                 }

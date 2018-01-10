@@ -14,14 +14,10 @@
             })(['不知名互联网资讯博主','知名互联网资讯博主','头条文章作者','资讯博主']));
             */
             $a = new ItemModel();
-            $this->assign('name',$a->search());
+            $b = $a->hongbao(10,9,0,10);
+            $this->assign('name',array($b));
+            $this->assign('total',array_sum($b));
             $this->display();
-        }
-        public function _before_index(){
-            echo 'bofore action';
-        }
-        public function _after_index(){
-            echo 'after action';
         }
         public function _empty(){
             echo '404，方法不存在';
