@@ -14,7 +14,8 @@
             })(['不知名互联网资讯博主','知名互联网资讯博主','头条文章作者','资讯博主']));
             */
             $a = new ItemModel();
-            $b = $a->hongbao(10,9,0,10);
+            //$b = $a->hongbao(90,90,0,10);
+            $b = $a->WXhongbao(10,5);
             $this->assign('name',array($b));
             $this->assign('total',array_sum($b));
             $this->display();
