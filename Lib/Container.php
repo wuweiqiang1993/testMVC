@@ -33,10 +33,6 @@ class Container
                 } else {
                     //不是可选参数的为了简单直接赋值为字符串0
                     //针对构造方法的必须参数这个情况
-                    //laravel是通过service provider注册closure到IocContainer,
-                    //在closure里可以通过return new Class($param1, $param2)来返回类的实例
-                    //然后在make时回调这个closure即可解析出对象
-                    //具体细节我会在另一篇文章里面描述
                     $dependencies[] = '0';
                 }
             } else {
